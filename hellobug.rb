@@ -14,7 +14,7 @@ end
 
 class Bug < Chingu::GameObject
   traits :timer
-  attr_accessor :biting
+  attr_accessor :biting, :bite_sound
 
   def initialize(options = {})
     super
@@ -27,7 +27,9 @@ class Bug < Chingu::GameObject
     self.factor = 1
 
     @animation = Chingu::Animation.new(:file => "spritesheet-bite-n-walk.png", :size => 300, :delay => 100)
-    @animation.frame_names = { :bitey => 0..1, :walking => 0..1, :walkbite => 1..2, :idle => 2..3 }
+    @animation.frame_names = { :bitey => 0..1, :walking => 0..1, :walkbite => 1..2, :idle => 0..0, :idle_open => 2..2 }
+    @bite_file = Sample["hit.wav"]
+    @bite_sound = @bite_file.play(1,1,true)
 
     @frame_name = :walking
 
@@ -37,7 +39,13 @@ class Bug < Chingu::GameObject
 
   def bite
     @biting = true
+    unless @bite_sound.playing?
+      @bite_sound = @bite_file.play(1,1,true)
+    end
   end
+
+
+
 
   def holding_left
     @x -= 2
@@ -75,7 +83,7 @@ class Bug < Chingu::GameObject
     @image = @animation[@frame_name].next
     if @x == @last_x && @y == @last_y
       if @biting
-        @frame_name = :bitey
+        @frame_name = :idle_open
       else
         @frame_name = :idle 
       end
@@ -83,8 +91,17 @@ class Bug < Chingu::GameObject
     
     # @x, @y = @last_x, @last_y if outside_window?
     @last_x, @last_y = @x, @y
-    @biting=false
+
+    
+    unless $window.button_down? Gosu::KbSpace
+      @biting = false
+      @bite_sound.pause
+    end
   end
+
+
+
+
 end
 
 Game.new.show
