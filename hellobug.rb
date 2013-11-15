@@ -27,7 +27,7 @@ class Bug < Chingu::GameObject
     self.factor = 1
 
     @animation = Chingu::Animation.new(:file => "spritesheet-bite-n-walk.png", :size => 300, :delay => 100)
-    @animation.frame_names = { :bitey => 0..1, :walking => 0..1, :walkbite => 1..2, :idle => 0..0, :idle_open => 2..2 }
+    @animation.frame_names = { :bitey => 1..2, :walking => 0..1, :walkbite => 3..4, :idle => 0..0, :idle_open => 2..2 }
     @bite_file = Sample["hit.wav"]
     @bite_sound = @bite_file.play(1,1,true)
 
@@ -68,12 +68,20 @@ class Bug < Chingu::GameObject
   
   def holding_up
     @y -= 2
-    @frame_name = :walking
+    if @biting
+      @frame_name = :walkbite
+    else
+      @frame_name = :walking
+    end
   end
 
   def holding_down
     @y += 2
-    @frame_name = :walking
+    if @biting
+      @frame_name = :walkbite
+    else
+      @frame_name = :walking
+    end
   end
 
   def update
@@ -83,7 +91,7 @@ class Bug < Chingu::GameObject
     @image = @animation[@frame_name].next
     if @x == @last_x && @y == @last_y
       if @biting
-        @frame_name = :idle_open
+        @frame_name = :bitey
       else
         @frame_name = :idle 
       end
@@ -92,10 +100,10 @@ class Bug < Chingu::GameObject
     # @x, @y = @last_x, @last_y if outside_window?
     @last_x, @last_y = @x, @y
 
-    
+
     unless $window.button_down? Gosu::KbSpace
       @biting = false
-      @bite_sound.pause
+      @bite_sound.stop
     end
   end
 
