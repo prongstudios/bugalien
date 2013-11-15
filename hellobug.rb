@@ -28,7 +28,7 @@ class Bug < Chingu::GameObject
 
     @animation = Chingu::Animation.new(:file => "spritesheet-bite-n-walk.png", :size => 300, :delay => 100)
     @animation.frame_names = { :bitey => 1..2, :walking => 0..1, :walkbite => 3..4, :idle => 0..0, :idle_open => 2..2 }
-    @bite_file = Sample["hit.wav"]
+    @bite_file = Sample["chomp.wav"]
     @bite_sound = @bite_file.play(1,1,true)
 
     @frame_name = :walking
