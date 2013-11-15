@@ -9,6 +9,9 @@ class Game < Chingu::Window
     self.input = { :escape => :exit }
     self.caption = "bugalien: the experience"
     Bug.create(:x => $window.width/2, :y => $window.height/2)
+    @current_song = Song["run_lofi.wav"]
+    @current_song.volume = 0.25
+    @current_song.play true
   end
 end
 
